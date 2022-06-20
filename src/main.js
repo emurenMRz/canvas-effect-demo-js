@@ -3,6 +3,9 @@ import Effect from "./effect";
 let auto = false;
 
 const params = {
+	force: 0,
+	radius: 0,
+	weight: 0,
 	duration: 0,
 	cycle: 0,
 	amplitude: 0,
@@ -11,12 +14,15 @@ const params = {
 
 addEventListener("load", () => {
 	const getDefaultParam = id => {
-		const value = document.getElementById(id).value | 0;
+		const value = Number(document.getElementById(id).value);
 		params[id] = value;
 		document.getElementById(`now:${id}`).textContent = value;
 	};
 
 	auto = document.getElementById("auto").checked;
+	getDefaultParam("force");
+	getDefaultParam("radius");
+	getDefaultParam("weight");
 	getDefaultParam("duration");
 	getDefaultParam("cycle");
 	getDefaultParam("amplitude");
@@ -37,7 +43,14 @@ addEventListener("load", () => {
 		e = e || window.event;
 		const cx = e.offsetX || e.layerX - e.target.offsetLeft || 0;
 		const cy = e.offsetY || e.layerY - e.target.offsetTop || 0;
-		effect.add(new Effect.Wave(cx, cy, params.duration, params.cycle, params.amplitude, params.offset));
+		let radius = params.radius;
+		if (!radius)
+			radius = undefined;
+		else if (canvas.clientWidth >= canvas.clientHeight)
+			radius = canvas.clientWidth * radius;
+		else
+			radius = canvas.clientHeight * radius;
+		effect.add(new Effect.Impact(cx, cy, params.force, radius, params.weight, params.duration, params.cycle, params.amplitude, params.offset));
 	});
 
 	effect.add(new Effect.Grayscale(undefined, 1));
@@ -82,12 +95,15 @@ document.getElementById("auto").addEventListener("click", function (e) { auto = 
 
 const setParam = e => {
 	if (!params || !e.currentTarget) return;
-	const value = e.currentTarget.value | 0;
+	const value = Number(e.currentTarget.value);
 	const id = e.currentTarget.id;
 	params[id] = value;
 	document.getElementById(`now:${id}`).textContent = value;
 };
 
+document.getElementById("force").addEventListener("change", setParam);
+document.getElementById("radius").addEventListener("change", setParam);
+document.getElementById("weight").addEventListener("change", setParam);
 document.getElementById("duration").addEventListener("change", setParam);
 document.getElementById("cycle").addEventListener("change", setParam);
 document.getElementById("amplitude").addEventListener("change", setParam);
