@@ -53,7 +53,8 @@ addEventListener("load", () => {
 		effect.add(new Effect.Impact(cx, cy, params.force, radius, params.weight, params.duration, params.cycle, params.amplitude, params.offset));
 	});
 
-	effect.add(new Effect.Grayscale(undefined, 1));
+	effect.add(new Effect.Grayscale(1000, 1));
+	effect.add(new Effect.PerlinNoise(10000, 1));
 
 	const fps = document.getElementById("fps");
 	let lastTick = undefined;
